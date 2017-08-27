@@ -252,8 +252,8 @@ def _plot_multiple(self, matured, lost, title, subtitle, bucket_size_days,
 
   max_yaxis = max(_round_up_max(max(y for x, y in matured)), _round_up_max(max(y for x, y in lost)))
   for i in range(len(matured)):
+    cumulative_total += matured[i][1]-lost[i][1]
     matured[i] = (matured[i][0], max(matured[i][1]-lost[i][1], 0))
-    cumulative_total += matured[i][1]
     cumulative_data.append((matured[i][0], cumulative_total))
 
   txt = self._title(_(title), _(subtitle))
