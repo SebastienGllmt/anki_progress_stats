@@ -8,21 +8,13 @@ This is a plugin for [Anki](http://ankisrs.net/) that adds the following graphs.
 
 This is the number of cards that were learned.  A card is considered "learned" if it leaves the learning phase.  This ignores cards that were relearned.  This also plots the cumulative total. When this is plotted over the deck lifetime, the final cumulative total roughly equals the number of young cards plus the number of matured cards plus the number of young and mature cards that are suspended.
 
-![Learned Cards](https://raw.githubusercontent.com/matthayes/anki_progress_stats/master/screenshots/learned_cards.png)
+![Learned Cards](screenshots/learned_cards.png)
 
 ### Net Matured Cards
 
 This is the net change in the number of matured cards, equal to the number of matured cards minus the number of cards that were mature but were forgotten.  A card is considered "matured" when its interval increases above 21 days and forgotten when its interval drop below 21 days.  This also plots the cumulative total. When this is plotted over the deck lifetime, the final cumulative total roughly equals the number of matured cards plus the number of matured cards that are suspended.
 
-![Net Matured Cards](https://raw.githubusercontent.com/matthayes/anki_progress_stats/master/screenshots/net_matured_cards.png)
-
-### Matured Cards
-
-This is the number of matured cards, as explained above.  This is included to help understand the values in the Net Matured Cards graph.
-
-### Matured Cards Lost
-
-This is the number of matured cards lost, as explained above.  This is included to help understand the values in the Net Matured Cards graph.
+![Net Matured Cards](screenshots/net_matured_cards.png)
 
 ## Motivation
 
@@ -40,10 +32,12 @@ Anki includes a Review Count graph that plots the total reviews for learning, re
 * 0.8: Improve graph performance
 * 0.9: Fix calculation of matured cards due to apparent lastIvl bug in revlog table
 * 0.10: Fix bug with last_ivl leading to overcounting of mature cards
+* 0.11: Merged all the mature card graphs into one
 
 ## License
 
 Copyright 2016 Matthew Hayes
+Copyright 2017 Sebastien Guillemot
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
