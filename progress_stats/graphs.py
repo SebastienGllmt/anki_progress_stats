@@ -60,7 +60,7 @@ def progressGraphs(*args, **kwargs):
               "Net increase in number of mature cards (matured cards - lost matured cards)",
               bucket_size_days,
               color=[colMature, colRelearn],
-              labels=[_("Mature"), _("Relearn")],
+              labels=[_("Relearn"), _("Mature")],
               include_cumulative=True)
 
   return result
