@@ -17,9 +17,9 @@ import math
 from progress_stats.compute import get_stats
 
 
-colYoung = "#7c7"
 colMature = "#070"
 colLearn = "#00F"
+colRelearn  = "#c00"
 defaultColor = "#0F0"
 
 _num_graphs = 0
@@ -54,27 +54,14 @@ def progressGraphs(*args, **kwargs):
               include_cumulative=True,
               color=colLearn)
 
-  result += _plot(self,
-              stats["net_matured_cards"],
+  result += _plot_multiple(self,
+              stats["matured_cards"], stats["lost_matured_card"],
               "Net Matured Cards",
               "Net increase in number of mature cards (matured cards - lost matured cards)",
               bucket_size_days,
-              include_cumulative=True,
-              color=colMature)
-
-  result += _plot(self,
-              stats["matured_cards"],
-              "Matured Cards",
-              "Number of cards that matured",
-              bucket_size_days,
-              color=colMature)
-
-  result += _plot(self,
-              stats["lost_matured_card"],
-              "Matured Cards Lost",
-              "Number of cards that lost maturity",
-              bucket_size_days,
-              color=colYoung)
+              color=[colMature, colRelearn],
+              labels=[_("Mature"), _("Relearn")],
+              include_cumulative=True)
 
   return result
 
@@ -239,6 +226,70 @@ def _plot(self, data, title, subtitle, bucket_size_days,
     text_lines,
     _("Average"),
     _("%(avg_cards)0.1f cards/day") % dict(avg_cards=cumulative_total / float(len(data) * bucket_size_days)))
+
+  if include_cumulative:
+    self._line(
+      text_lines,
+      _("Total"),
+      _("%(total)d cards") % dict(total=cumulative_total))
+
+  txt += self._lineTbl(text_lines)
+
+  return txt
+
+
+def _plot_multiple(self, matured, lost, title, subtitle, bucket_size_days,
+          color, labels, include_cumulative=False, 
+  ):
+
+  global _num_graphs
+  if not matured or not lost:
+    return ""
+
+  cumulative_total = 0
+  cumulative_data = []
+
+  max_yaxis = max(_round_up_max(max(y for x, y in matured)), _round_up_max(max(y for x, y in lost)))
+  for i in range(len(matured)):
+    matured[i] = (matured[i][0], max(matured[i][1]-lost[i][1], 0))
+    cumulative_total += matured[i][1]
+    cumulative_data.append((matured[i][0], cumulative_total))
+
+  txt = self._title(_(title), _(subtitle))
+
+  graph_data = [dict(data=lost, color=color[1], label=labels[0]), dict(data=matured, color=color[0], label=labels[1])]
+
+  if include_cumulative:
+    graph_data.append(
+      dict(data=cumulative_data,
+           color="#888888",
+           label=_("Cumulative"),
+           yaxis=2,
+           bars={'show': False},
+           lines=dict(show=True),
+           stack=False))
+
+  yaxes = [dict(min=0, max=max_yaxis)]
+
+  if include_cumulative:
+    yaxes.append(dict(min=0, max=_round_up_max(cumulative_total), position="right"))
+
+  txt += _graph(
+    self,
+    id="progress-%s" % _num_graphs,
+    data=graph_data,
+    conf=dict(
+      xaxis=dict(max=0.5),
+      yaxes=yaxes))
+
+  _num_graphs += 1
+
+  text_lines = []
+
+  self._line(
+    text_lines,
+    _("Average"),
+    _("%(avg_cards)0.1f cards/day") % dict(avg_cards=cumulative_total / float(len(matured) * bucket_size_days)))
 
   if include_cumulative:
     self._line(
